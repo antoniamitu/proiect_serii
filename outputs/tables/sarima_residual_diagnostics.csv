@@ -1,7 +1,7 @@
 metric,value
 AIC,165.8053498135683
 BIC,173.9775548849065
-Ljung-Box(12) statistic,29.243968755841497
-Ljung-Box(12) p-value,0.003624177813174161
-Normality statistic,102.72073299655825
-Normality p-value,4.948530385018059e-23
+Ljung-Box(12) statistic,0.36902111788095915
+Ljung-Box(12) p-value,0.9999999532022886
+Normality statistic,149.22118010261704
+Normality p-value,3.9539616177062014e-33

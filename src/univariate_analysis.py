@@ -22,6 +22,8 @@ from src.utils.seasonality import (
     plot_stl_decomposition,
     plot_acf_series,
     plot_pacf_series,
+    plot_acf_differenced,
+    plot_pacf_differenced,
     compute_monthly_seasonality_table,
 )
 from src.utils.smoothing_models import (
@@ -106,12 +108,16 @@ def main() -> None:
     stl_plot_path = plot_stl_decomposition(series_df)
     acf_plot_path = plot_acf_series(series_df)
     pacf_plot_path = plot_pacf_series(series_df)
+    acf_diff_plot_path = plot_acf_differenced(series_df)
+    pacf_diff_plot_path = plot_pacf_differenced(series_df)
     monthly_seasonality_df = compute_monthly_seasonality_table(series_df)
 
     print("\nSeasonality analysis completed.")
     print(f"STL decomposition plot saved to: {stl_plot_path}")
-    print(f"ACF plot saved to: {acf_plot_path}")
-    print(f"PACF plot saved to: {pacf_plot_path}")
+    print(f"ACF (level) plot saved to: {acf_plot_path}")
+    print(f"PACF (level) plot saved to: {pacf_plot_path}")
+    print(f"ACF (differenced) plot saved to: {acf_diff_plot_path}")
+    print(f"PACF (differenced) plot saved to: {pacf_diff_plot_path}")
     print("\nAverage monthly values:")
     print(monthly_seasonality_df)
 
@@ -133,7 +139,15 @@ def main() -> None:
     print(f"Holt-Winters forecast plot saved to: {hw_plot_path}")
     print(f"Smoothing model summary saved to: {smoothing_summary_path}")
 
-    # SARIMA
+    # SARIMA tuning — rulat primul pentru a justifica alegerea modelului final
+    sarima_tuning_df = evaluate_sarima_candidates(train, test)
+    sarima_tuning_path = save_sarima_tuning_results(sarima_tuning_df)
+
+    print("\nSARIMA tuning results:")
+    print(sarima_tuning_df)
+    print(f"\nSARIMA tuning table saved to: {sarima_tuning_path}")
+
+    # SARIMA final — ales pe baza rezultatelor de tuning de mai sus
     final_sarima_order = (1, 1, 1)
     final_sarima_seasonal_order = (0, 1, 1, 12)
 
@@ -162,15 +176,7 @@ def main() -> None:
     print(f"SARIMA diagnostics saved to: {diagnostics_path}")
     print("\nSARIMA diagnostics:")
     print(diagnostics_df)
-
-    # SARIMA tuning
-    sarima_tuning_df = evaluate_sarima_candidates(train, test)
-    sarima_tuning_path = save_sarima_tuning_results(sarima_tuning_df)
-
-    print("\nSARIMA tuning results:")
-    print(sarima_tuning_df)
-    print(f"\nSARIMA tuning table saved to: {sarima_tuning_path}")
-
+    
     # Final comparison
     comparison_df = compare_models(smoothing_forecast_df, sarima_forecast_df)
     comparison_path = save_model_comparison(comparison_df)

@@ -96,3 +96,46 @@ def compute_monthly_seasonality_table(series_df: pd.DataFrame) -> pd.DataFrame:
     )
 
     return monthly_avg
+
+def plot_acf_differenced(series_df: pd.DataFrame, lags: int = 36) -> Path:
+    """
+    Plot ACF for the first-differenced series.
+    Used to identify the MA order q for SARIMA.
+    """
+    ensure_figures_dir()
+
+    diff_col = f"diff_{SERIES_COLUMN}"
+    if diff_col not in series_df.columns:
+        raise ValueError(f"Column '{diff_col}' not found. Run create_stationarity_variants() first.")
+
+    fig, ax = plt.subplots(figsize=FIG_SIZE)
+    plot_acf(series_df[diff_col].dropna(), lags=lags, ax=ax)
+    ax.set_title(f"ACF - First Difference of {SERIES_NAME}")
+
+    output_path = FIGURES_DIR / "04b_acf_differenced.png"
+    plt.savefig(output_path, dpi=DPI, bbox_inches="tight")
+    plt.close()
+
+    return output_path
+
+
+def plot_pacf_differenced(series_df: pd.DataFrame, lags: int = 36) -> Path:
+    """
+    Plot PACF for the first-differenced series.
+    Used to identify the AR order p for SARIMA.
+    """
+    ensure_figures_dir()
+
+    diff_col = f"diff_{SERIES_COLUMN}"
+    if diff_col not in series_df.columns:
+        raise ValueError(f"Column '{diff_col}' not found. Run create_stationarity_variants() first.")
+
+    fig, ax = plt.subplots(figsize=FIG_SIZE)
+    plot_pacf(series_df[diff_col].dropna(), lags=lags, ax=ax, method="ywm")
+    ax.set_title(f"PACF - First Difference of {SERIES_NAME}")
+
+    output_path = FIGURES_DIR / "05b_pacf_differenced.png"
+    plt.savefig(output_path, dpi=DPI, bbox_inches="tight")
+    plt.close()
+
+    return output_path

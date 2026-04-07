@@ -1,43 +1,43 @@
-# Virtual environment
 .venv/
 venv/
 env/
 
-# Python cache
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Distribution / packaging
 build/
 dist/
 *.egg-info/
 .eggs/
 
-# Jupyter / notebooks
 .ipynb_checkpoints/
+*.ipynb
 
-# VS Code
 .vscode/
+.idea/
 
-# Pytest / coverage
 .pytest_cache/
 .coverage
 coverage.xml
 htmlcov/
 
-# Type checkers / linters
 .mypy_cache/
 .ruff_cache/
 .pyre/
 
-# OS files
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Logs
 *.log
 
-# Local environment files
 .env
 .env.*
+
+outputs/figures/
+outputs/tables/
+data/processed/
+
+*.xlsx
+*.xls

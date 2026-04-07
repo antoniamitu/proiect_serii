@@ -126,7 +126,10 @@ def plot_sarima_residuals(fitted_model) -> Path:
     """
     ensure_output_directories()
 
-    residuals = fitted_model.resid
+    order = fitted_model.model.order
+    seasonal_order = fitted_model.model.seasonal_order
+    n_init = order[1] + seasonal_order[1] * seasonal_order[3]
+    residuals = fitted_model.resid.iloc[n_init:]
 
     plt.figure(figsize=FIG_SIZE)
     plt.plot(residuals.index, residuals)
@@ -150,7 +153,10 @@ def plot_sarima_qq(fitted_model) -> Path:
     """
     ensure_output_directories()
 
-    residuals = fitted_model.resid.dropna()
+    order = fitted_model.model.order
+    seasonal_order = fitted_model.model.seasonal_order
+    n_init = order[1] + seasonal_order[1] * seasonal_order[3]
+    residuals = fitted_model.resid.iloc[n_init:].dropna()
 
     fig = plt.figure(figsize=FIG_SIZE)
     ax = fig.add_subplot(111)
@@ -169,7 +175,10 @@ def residual_diagnostics_table(fitted_model, ljung_box_lags=12) -> pd.DataFrame:
     """
     Build a small diagnostics table for SARIMA residuals.
     """
-    residuals = fitted_model.resid.dropna()
+    order = fitted_model.model.order
+    seasonal_order = fitted_model.model.seasonal_order
+    n_init = order[1] + seasonal_order[1] * seasonal_order[3]
+    residuals = fitted_model.resid.iloc[n_init:].dropna()
 
     lb_df = acorr_ljungbox(residuals, lags=[ljung_box_lags], return_df=True)
     lb_stat = lb_df["lb_stat"].iloc[0]
