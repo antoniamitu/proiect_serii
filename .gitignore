@@ -35,11 +35,16 @@ desktop.ini
 .env
 .env.*
 
-outputs/figures/
+# Generated figures (track multivariate exports; ignore the rest)
+outputs/figures/*
+!outputs/figures/multivariate/
+!outputs/figures/multivariate/**
+
 outputs/tables/
 
-# Legacy local figure folder (figures go under outputs/figures/)
+# Optional duplicate figure copies at repo root (versioned copies live under outputs/figures/multivariate/)
 output/
+
 data/processed/
 
 *.xlsx
