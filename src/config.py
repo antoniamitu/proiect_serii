@@ -27,3 +27,34 @@ FORECAST_CONFIDENCE_LEVELS = [0.80, 0.95]
 # Plot settings
 FIG_SIZE = (12, 6)
 DPI = 300
+
+# ---------------------------------------------------------------------------
+# Multivariate VAR / VECM analysis (canonical CSV column names)
+# ---------------------------------------------------------------------------
+MV_COL_FOOD = "Food_HICP"
+MV_COL_CTOT = "CTOT"
+MV_COL_PI = "PI_SA"
+MV_COL_EUR = "EUR_RON"
+
+MV_LOG_FOOD = "log_Food_HICP"
+MV_LOG_CTOT = "log_CTOT"
+MV_LOG_PI = "log_PI_SA"
+MV_LOG_EUR = "log_EUR_RON"
+
+# Map lowercase aliases in raw CSV -> canonical names
+MV_COLUMN_ALIASES = {
+    "food_hicp": MV_COL_FOOD,
+    "ctot": MV_COL_CTOT,
+    "ctot_import": MV_COL_CTOT,
+    "pi_sa": MV_COL_PI,
+    "eur_ron": MV_COL_EUR,
+}
+
+JOHANSEN_DET_ORDER = 0
+VECM_DETERMINISTIC = "ci"
+
+MV_IRF_PERIODS = 12
+MV_FEVD_PERIODS = 24
+MV_MAX_LAG_ORDER = 12
+
+MULTIVARIATE_FIG_DIR = FIGURES_DIR / "multivariate"

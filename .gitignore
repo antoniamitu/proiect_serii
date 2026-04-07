@@ -37,6 +37,9 @@ desktop.ini
 
 outputs/figures/
 outputs/tables/
+
+# Legacy local figure folder (figures go under outputs/figures/)
+output/
 data/processed/
 
 *.xlsx
