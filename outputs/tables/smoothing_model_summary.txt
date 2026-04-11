@@ -1,10 +1,40 @@
 Simple Exponential Smoothing
-{'smoothing_level': np.float64(0.9999999850988388), 'smoothing_trend': np.float64(nan), 'smoothing_seasonal': np.float64(nan), 'damping_trend': nan, 'initial_level': np.float64(98.81999984306592), 'initial_trend': np.float64(nan), 'initial_seasons': array([], dtype=float64), 'use_boxcox': False, 'lamda': None, 'remove_bias': False}
+----------------------------
+smoothing_level: 0.9999999850988388
+smoothing_trend: nan
+smoothing_seasonal: nan
+damping_trend: nan
+initial_level: 98.81999984306592
+initial_trend: nan
+initial_seasons: []
+use_boxcox: False
+lamda: None
+remove_bias: False
 
 Holt Linear Trend
-{'smoothing_level': np.float64(0.9999999850988388), 'smoothing_trend': np.float64(0.7967843616918014), 'smoothing_seasonal': np.float64(nan), 'damping_trend': nan, 'initial_level': np.float64(98.10459612717919), 'initial_trend': np.float64(0.7154042285982735), 'initial_seasons': array([], dtype=float64), 'use_boxcox': False, 'lamda': None, 'remove_bias': False}
+-----------------
+smoothing_level: 0.9999999850988388
+smoothing_trend: 0.7967843616918014
+smoothing_seasonal: nan
+damping_trend: nan
+initial_level: 98.10459612717919
+initial_trend: 0.7154042285982735
+initial_seasons: []
+use_boxcox: False
+lamda: None
+remove_bias: False
 
 Holt-Winters Additive Trend + Additive Seasonality
-{'smoothing_level': np.float64(0.9999999850988388), 'smoothing_trend': np.float64(0.47028135382431346), 'smoothing_seasonal': np.float64(2.5018494914011834e-10), 'damping_trend': nan, 'initial_level': np.float64(99.39481065256274), 'initial_trend': np.float64(-0.11463450363277754), 'initial_seasons': array([-0.4600277 ,  0.33896381,  1.17722944,  1.75049183,  2.18165152,
-        1.15067529, -0.18092635, -1.5946471 , -1.6333548 , -0.94847446,
-       -1.20721538, -1.02380823]), 'use_boxcox': False, 'lamda': None, 'remove_bias': False}
+--------------------------------------------------
+smoothing_level: 0.9999999850988388
+smoothing_trend: 0.47028135382431346
+smoothing_seasonal: 2.5018494914011834e-10
+damping_trend: nan
+initial_level: 99.39481065256274
+initial_trend: -0.11463450363277754
+initial_seasons: [-0.4600277   0.33896381  1.17722944  1.75049183  2.18165152  1.15067529
+ -0.18092635 -1.5946471  -1.6333548  -0.94847446 -1.20721538 -1.02380823]
+use_boxcox: False
+lamda: None
+remove_bias: False
+

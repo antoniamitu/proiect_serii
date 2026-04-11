@@ -1,7 +1,15 @@
 metric,value
 AIC,165.8053498135683
 BIC,173.9775548849065
+enforce_stationarity,False
+enforce_invertibility,False
+effective_residual_count,71
 Ljung-Box(12) statistic,0.36902111788095915
 Ljung-Box(12) p-value,0.9999999532022886
 Normality statistic,149.22118010261704
 Normality p-value,3.9539616177062014e-33
+seasonal_ma_parameter,ma.S.L12
+seasonal_ma_coefficient,-1.000057403502481
+seasonal_ma_std_error,1492.2440500916373
+seasonal_ma_p_value,0.9994652816324558
+seasonal_ma_near_boundary,True

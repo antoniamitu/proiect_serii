@@ -35,13 +35,6 @@ desktop.ini
 .env
 .env.*
 
-# Generated figures (track multivariate exports; ignore the rest)
-outputs/figures/*
-!outputs/figures/multivariate/
-!outputs/figures/multivariate/**
-
-outputs/tables/
-
 # Optional duplicate figure copies at repo root (versioned copies live under outputs/figures/multivariate/)
 output/
 

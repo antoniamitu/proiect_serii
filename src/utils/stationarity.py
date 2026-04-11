@@ -36,6 +36,7 @@ def run_adf_test(series: pd.Series, series_name: str) -> dict:
 def run_kpss_test(series: pd.Series, series_name: str, regression: str = "c") -> dict:
     """
     Run KPSS test on a series.
+
     regression='c'  -> level stationarity
     regression='ct' -> trend stationarity
     """
@@ -79,11 +80,16 @@ def create_stationarity_variants(series_df: pd.DataFrame) -> pd.DataFrame:
 
 def run_stationarity_suite(series_df: pd.DataFrame) -> pd.DataFrame:
     """
-    Run ADF and KPSS tests on:
+    Run stationarity tests on:
     - level series
     - log series
     - first-differenced level series
     - first-differenced log series
+
+    Tests used:
+    - ADF for all variants
+    - KPSS_c for all variants
+    - KPSS_ct only for the level series, to assess trend-stationarity
     """
     results = []
 
@@ -97,6 +103,9 @@ def run_stationarity_suite(series_df: pd.DataFrame) -> pd.DataFrame:
     for variant_name, variant_series in variants.items():
         results.append(run_adf_test(variant_series, variant_name))
         results.append(run_kpss_test(variant_series, variant_name, regression="c"))
+
+        if variant_name == "level":
+            results.append(run_kpss_test(variant_series, variant_name, regression="ct"))
 
     results_df = pd.DataFrame(results)
     return results_df
@@ -112,14 +121,71 @@ def save_stationarity_results(results_df: pd.DataFrame) -> Path:
     return output_path
 
 
+def _adf_conclusion(p_value: float, alpha: float) -> str:
+    return "stationary" if p_value < alpha else "non-stationary"
+
+
+def _kpss_conclusion(p_value: float, alpha: float) -> str:
+    return "non-stationary" if p_value < alpha else "stationary"
+
+
+def _combine_adf_kpss(adf_p: float, kpss_p: float, alpha: float) -> str:
+    adf_result = _adf_conclusion(adf_p, alpha)
+    kpss_result = _kpss_conclusion(kpss_p, alpha)
+
+    if adf_result == "stationary" and kpss_result == "stationary":
+        return "likely stationary"
+    if adf_result == "non-stationary" and kpss_result == "non-stationary":
+        return "likely non-stationary"
+    return "mixed evidence"
+
+
+def _assess_trend_type(
+    adf_p: float,
+    kpss_c_p: float,
+    kpss_ct_p: float | None,
+    alpha: float,
+) -> str:
+    """
+    Assess whether the level series is more consistent with:
+    - stochastic trend / unit root
+    - deterministic trend / trend-stationary behavior
+    - mixed evidence
+
+    Interpretation logic:
+    - ADF non-rejection + KPSS_c rejection strongly suggests non-stationarity.
+    - If KPSS_ct is NOT rejected, this may be compatible with trend-stationarity.
+    - If KPSS_ct is also rejected, evidence points more strongly toward a stochastic trend.
+    """
+    adf_nonstationary = adf_p >= alpha
+    kpss_c_nonstationary = kpss_c_p < alpha
+
+    if kpss_ct_p is None:
+        if adf_nonstationary and kpss_c_nonstationary:
+            return "evidence of non-stationarity; trend form not fully distinguished"
+        return "trend form unclear"
+
+    kpss_ct_nonstationary = kpss_ct_p < alpha
+
+    if adf_nonstationary and kpss_c_nonstationary and not kpss_ct_nonstationary:
+        return "compatible with deterministic trend (trend-stationary possibility)"
+    if adf_nonstationary and kpss_c_nonstationary and kpss_ct_nonstationary:
+        return "evidence of stochastic trend (unit root likely)"
+    if (not adf_nonstationary) and (not kpss_c_nonstationary):
+        return "no strong evidence of trend-driven non-stationarity"
+    return "mixed evidence on trend form"
+
+
 def build_stationarity_summary(results_df: pd.DataFrame, alpha: float = 0.05) -> pd.DataFrame:
     """
     Build a simplified interpretation table.
 
     ADF:
         p < alpha => reject unit root => stationary
-    KPSS:
-        p < alpha => reject stationarity => non-stationary
+    KPSS_c:
+        p < alpha => reject level stationarity => non-stationary
+    KPSS_ct:
+        p < alpha => reject trend stationarity => non-stationary around trend
     """
     summary_rows = []
 
@@ -127,26 +193,38 @@ def build_stationarity_summary(results_df: pd.DataFrame, alpha: float = 0.05) ->
         subset = results_df[results_df["series"] == series_name]
 
         adf_row = subset[subset["test"] == "ADF"].iloc[0]
-        kpss_row = subset[subset["test"].str.startswith("KPSS")].iloc[0]
+        kpss_c_row = subset[subset["test"] == "KPSS_c"].iloc[0]
 
-        adf_conclusion = "stationary" if adf_row["p_value"] < alpha else "non-stationary"
-        kpss_conclusion = "non-stationary" if kpss_row["p_value"] < alpha else "stationary"
+        kpss_ct_subset = subset[subset["test"] == "KPSS_ct"]
+        kpss_ct_row = kpss_ct_subset.iloc[0] if not kpss_ct_subset.empty else None
 
-        if adf_conclusion == "stationary" and kpss_conclusion == "stationary":
-            overall = "likely stationary"
-        elif adf_conclusion == "non-stationary" and kpss_conclusion == "non-stationary":
-            overall = "likely non-stationary"
-        else:
-            overall = "mixed evidence"
+        adf_p = adf_row["p_value"]
+        kpss_c_p = kpss_c_row["p_value"]
+        kpss_ct_p = kpss_ct_row["p_value"] if kpss_ct_row is not None else np.nan
+
+        adf_conclusion = _adf_conclusion(adf_p, alpha)
+        kpss_c_conclusion = _kpss_conclusion(kpss_c_p, alpha)
+        stationarity_conclusion = _combine_adf_kpss(adf_p, kpss_c_p, alpha)
+
+        trend_assessment = ""
+        if series_name == "level":
+            trend_assessment = _assess_trend_type(
+                adf_p=adf_p,
+                kpss_c_p=kpss_c_p,
+                kpss_ct_p=None if pd.isna(kpss_ct_p) else kpss_ct_p,
+                alpha=alpha,
+            )
 
         summary_rows.append(
             {
                 "series": series_name,
-                "adf_p_value": adf_row["p_value"],
+                "adf_p_value": adf_p,
                 "adf_conclusion": adf_conclusion,
-                "kpss_p_value": kpss_row["p_value"],
-                "kpss_conclusion": kpss_conclusion,
-                "overall_conclusion": overall,
+                "kpss_c_p_value": kpss_c_p,
+                "kpss_c_conclusion": kpss_c_conclusion,
+                "kpss_ct_p_value": kpss_ct_p,
+                "stationarity_conclusion": stationarity_conclusion,
+                "trend_assessment": trend_assessment,
             }
         )
 

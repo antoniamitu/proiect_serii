@@ -25,6 +25,8 @@ from src.utils.seasonality import (
     plot_acf_differenced,
     plot_pacf_differenced,
     compute_monthly_seasonality_table,
+    save_monthly_seasonality_table,
+    plot_monthly_seasonality,
 )
 from src.utils.smoothing_models import (
     split_train_test,
@@ -43,6 +45,7 @@ from src.utils.sarima_model import (
     plot_sarima_qq,
     residual_diagnostics_table,
     save_residual_diagnostics,
+    save_sarima_diagnostic_notes,
 )
 from src.utils.evaluation import (
     compare_models,
@@ -106,14 +109,18 @@ def main() -> None:
     print(f"\nStationarity summary saved to: {stationarity_summary_path}")
 
     stl_plot_path = plot_stl_decomposition(series_df)
+    monthly_seasonality_df = compute_monthly_seasonality_table(series_df)
+    monthly_seasonality_path = save_monthly_seasonality_table(monthly_seasonality_df)
+    monthly_plot_path = plot_monthly_seasonality(monthly_seasonality_df)
     acf_plot_path = plot_acf_series(series_df)
     pacf_plot_path = plot_pacf_series(series_df)
     acf_diff_plot_path = plot_acf_differenced(series_df)
     pacf_diff_plot_path = plot_pacf_differenced(series_df)
-    monthly_seasonality_df = compute_monthly_seasonality_table(series_df)
 
     print("\nSeasonality analysis completed.")
     print(f"STL decomposition plot saved to: {stl_plot_path}")
+    print(f"Monthly seasonality table saved to: {monthly_seasonality_path}")
+    print(f"Monthly seasonality plot saved to: {monthly_plot_path}")
     print(f"ACF (level) plot saved to: {acf_plot_path}")
     print(f"PACF (level) plot saved to: {pacf_plot_path}")
     print(f"ACF (differenced) plot saved to: {acf_diff_plot_path}")
@@ -128,10 +135,10 @@ def main() -> None:
     print(f"Train period: {train.index.min().date()} -> {train.index.max().date()}")
     print(f"Test period: {test.index.min().date()} -> {test.index.max().date()}")
 
-    smoothing_forecast_df = generate_forecasts(train, test)
+    smoothing_forecast_df, fitted_models = generate_forecasts(train, test)
     smoothing_forecasts_path = save_smoothing_forecasts(smoothing_forecast_df)
     hw_plot_path = plot_holt_winters_forecast(train, test, smoothing_forecast_df)
-    smoothing_summary_path = save_smoothing_model_params(train)
+    smoothing_summary_path = save_smoothing_model_params(fitted_models)
 
     print("\nSmoothing models estimated successfully.")
     print(smoothing_forecast_df.head())
@@ -164,6 +171,7 @@ def main() -> None:
     qq_plot_path = plot_sarima_qq(sarima_model)
     diagnostics_df = residual_diagnostics_table(sarima_model)
     diagnostics_path = save_residual_diagnostics(diagnostics_df)
+    diagnostic_notes_path = save_sarima_diagnostic_notes(sarima_model, diagnostics_df)
 
     print("\nFinal SARIMA model estimated successfully.")
     print(f"Selected model: SARIMA{final_sarima_order}x{final_sarima_seasonal_order}")
@@ -174,6 +182,7 @@ def main() -> None:
     print(f"SARIMA residuals plot saved to: {residuals_plot_path}")
     print(f"SARIMA QQ plot saved to: {qq_plot_path}")
     print(f"SARIMA diagnostics saved to: {diagnostics_path}")
+    print(f"SARIMA diagnostic notes saved to: {diagnostic_notes_path}")
     print("\nSARIMA diagnostics:")
     print(diagnostics_df)
     

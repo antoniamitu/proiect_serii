@@ -1,0 +1,13 @@
+SARIMA diagnostic notes
+======================
+
+Model estimated with enforce_stationarity=False and enforce_invertibility=False. This allows the optimizer to approach the boundary of the admissible parameter space if that improves fit.
+
+Ljung-Box p-value = 1.0000: no strong evidence of residual autocorrelation at the selected lag, so the residuals behave approximately like white noise in this respect.
+
+Normality p-value = 3.9540e-33: residual normality is rejected. This is consistent with the visible outlier / shock period in 2021–2022 and suggests that the series contains unusually large deviations that a plain SARIMA model cannot fully absorb.
+
+Seasonal MA parameter (ma.S.L12) = -1.0001, std. error = 1492.2441, p-value = 0.9995.
+Its absolute value is very close to 1, which suggests that the seasonal MA component is near the boundary of invertibility / identification. Therefore, this parameter should not be over-interpreted individually.
+
+Interpretation rule for the report: the final SARIMA model is retained primarily because of its strong out-of-sample forecasting performance relative to Holt-Winters, not because every individual parameter is cleanly identified or statistically significant.

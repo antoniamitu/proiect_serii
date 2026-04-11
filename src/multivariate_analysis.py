@@ -123,7 +123,7 @@ def main() -> int:
         k_ar_diff = select_var_lag_aic(dy, maxlags=max_l)
         k_ar_diff = max(1, k_ar_diff)
         print(f"\n  Johansen / VECM lag order (k_ar_diff): {k_ar_diff}")
-        coint_rank, _ = johansen_rank(
+        coint_rank, _, _ = johansen_rank(
             y.values, JOHANSEN_DET_ORDER, k_ar_diff=k_ar_diff
         )
     else:

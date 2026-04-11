@@ -12,11 +12,12 @@ The main series is the Romanian Food HICP Index (harmonised consumer price index
 non-alcoholic beverages), sourced from IMF STA:CPI, monthly frequency, January 2017 – December 2025.
 
 The analysis covers:
-- Deterministic vs. stochastic trend (ADF + KPSS tests)
+- Deterministic vs. stochastic trend assessment (ADF, KPSS_c, and KPSS_ct on the level series)
 - Stationarity testing and order of integration
+- Seasonality inspection using STL decomposition, average monthly patterns, ACF, and PACF
 - Exponential smoothing methods (SES, Holt, Holt-Winters)
 - SARIMA model identification, estimation, and residual diagnostics
-- Point forecasts and 80%/95% confidence intervals
+- Point forecasts and 80% / 95% confidence intervals
 - Out-of-sample forecast comparison (Holt-Winters vs. SARIMA)
 
 ---
@@ -39,7 +40,7 @@ proiect_serii/
 │       ├── load_data.py              # Data loading and preparation
 │       ├── descriptive.py            # Descriptive statistics and level/log plots
 │       ├── stationarity.py           # ADF and KPSS tests
-│       ├── seasonality.py            # STL decomposition, ACF, PACF
+│       ├── seasonality.py            # STL decomposition, monthly seasonality, ACF, PACF
 │       ├── smoothing_models.py       # SES, Holt, Holt-Winters
 │       ├── sarima_tuning.py          # Candidate model grid evaluation
 │       ├── sarima_model.py           # Final SARIMA estimation and diagnostics
@@ -109,8 +110,17 @@ No arguments required — all configuration is in `src/config.py`.
 Train set: 2017–2023 (84 observations)
 Test set: 2024–2025 (24 observations)
 
-The series is integrated of order 1 — I(1). Both ADF and KPSS confirm non-stationarity in
-levels and stationarity after first differencing.
+The series is integrated of order 1 — I(1). ADF does not reject a unit root in levels, while
+KPSS_c and KPSS_ct on the level series reject level/trend stationarity. After first differencing,
+the evidence supports stationarity. This pattern is consistent with a stochastic trend in the
+Food HICP series.
+
+The final SARIMA(1,1,1)(0,1,1,12) model is retained because of its clearly superior
+out-of-sample forecasting performance relative to Holt-Winters. Residual diagnostics show
+no strong evidence of remaining autocorrelation at lag 12, but residual normality is rejected,
+which is consistent with the large shock episode from 2021–2022. The seasonal MA parameter
+is also near the invertibility boundary, so the model is interpreted primarily through forecast
+performance rather than through the individual significance of every estimated coefficient.
 
 ---
 
@@ -122,7 +132,7 @@ levels and stationarity after first differencing.
 |-----------------------------|----------------------------------------------|
 | `01_food_hicp_levels.png`   | Series in levels                             |
 | `02_food_hicp_log.png`      | Log-transformed series                       |
-| `03_stl_decomposition.png`  | STL decomposition (trend, seasonal, residual)|
+| `03b_monthly_seasonality.png` | Average monthly seasonal pattern            |
 | `04_acf.png`                | ACF — level series                           |
 | `04b_acf_differenced.png`   | ACF — first-differenced series               |
 | `05_pacf.png`               | PACF — level series                          |
@@ -134,15 +144,17 @@ levels and stationarity after first differencing.
 
 ### Tables
 
-| File                             | Content                                   |
-|----------------------------------|-------------------------------------------|
-| `descriptive_stats.csv`          | Mean, std, min, max, median, n            |
-| `stationarity_results.csv`       | Full ADF and KPSS test results            |
-| `stationarity_summary.csv`       | Simplified stationarity conclusions       |
-| `smoothing_forecasts.csv`        | SES, Holt, HW forecasts vs. actuals       |
-| `smoothing_model_summary.txt`    | Estimated smoothing parameters            |
-| `sarima_tuning_results.csv`      | Candidate SARIMA models ranked by RMSE    |
-| `sarima_summary.txt`             | Full SARIMAX estimation output            |
-| `sarima_forecast.csv`            | SARIMA forecasts with confidence intervals|
-| `sarima_residual_diagnostics.csv`| AIC, BIC, Ljung-Box, normality tests      |
-| `forecast_accuracy.csv`          | Final RMSE / MAE / MAPE comparison        |
+| File                              | Content                                              |
+|-----------------------------------|------------------------------------------------------|
+| `descriptive_stats.csv`           | Mean, std, min, max, median, n                       |
+| `monthly_seasonality.csv`         | Average monthly values used to inspect seasonality   |
+| `stationarity_results.csv`        | Full ADF, KPSS_c, and KPSS_ct results                |
+| `stationarity_summary.csv`        | Simplified stationarity and trend conclusions        |
+| `smoothing_forecasts.csv`         | SES, Holt, HW forecasts vs. actuals                  |
+| `smoothing_model_summary.txt`     | Estimated smoothing parameters                       |
+| `sarima_tuning_results.csv`       | Candidate SARIMA models ranked by RMSE               |
+| `sarima_summary.txt`              | Full SARIMAX estimation output                       |
+| `sarima_forecast.csv`             | SARIMA forecasts with confidence intervals           |
+| `sarima_residual_diagnostics.csv` | Residual tests and key SARIMA parameter diagnostics  |
+| `sarima_diagnostic_notes.txt`     | Short interpretation notes for the final SARIMA model|
+| `forecast_accuracy.csv`           | Final RMSE / MAE / MAPE comparison                   |

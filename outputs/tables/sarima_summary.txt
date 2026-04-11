@@ -2,8 +2,8 @@
 ==========================================================================================
 Dep. Variable:                          food_hicp   No. Observations:                   84
 Model:             SARIMAX(1, 1, 1)x(0, 1, 1, 12)   Log Likelihood                 -78.903
-Date:                            Tue, 07 Apr 2026   AIC                            165.805
-Time:                                    18:42:26   BIC                            173.978
+Date:                            Sat, 11 Apr 2026   AIC                            165.805
+Time:                                    20:04:36   BIC                            173.978
 Sample:                                01-01-2017   HQIC                           168.981
                                      - 12-01-2023                                         
 Covariance Type:                              opg                                         

@@ -1,5 +1,5 @@
-series,adf_p_value,adf_conclusion,kpss_p_value,kpss_conclusion,overall_conclusion
-level,0.9843467697069508,non-stationary,0.01,non-stationary,likely non-stationary
-log_food_hicp,0.966786707000056,non-stationary,0.01,non-stationary,likely non-stationary
-diff_food_hicp,1.2209069282010636e-05,stationary,0.1,stationary,likely stationary
-diff_log_food_hicp,1.1491336091033307e-05,stationary,0.1,stationary,likely stationary
+series,adf_p_value,adf_conclusion,kpss_c_p_value,kpss_c_conclusion,kpss_ct_p_value,stationarity_conclusion,trend_assessment
+level,0.9843467697069508,non-stationary,0.01,non-stationary,0.01,likely non-stationary,evidence of stochastic trend (unit root likely)
+log_food_hicp,0.966786707000056,non-stationary,0.01,non-stationary,,likely non-stationary,
+diff_food_hicp,1.2209069282010636e-05,stationary,0.1,stationary,,likely stationary,
+diff_log_food_hicp,1.1491336091033307e-05,stationary,0.1,stationary,,likely stationary,
